@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use automata_sgx_sdk::types::SgxStatus;
 use base::{eth::Eth, thread::parallel, trace::Alive};
@@ -64,13 +64,15 @@ fn read_finalize(path: &PathBuf) -> Finalize {
 async fn run_verifier() {
     let opt = Opt::parse();
 
-    let l1 = Eth::dial(&opt.l1_endpoint, Some(&opt.private_key)).unwrap();
-    let kp = Keypair::new();
-    let quote_builder = SGXQuoteBuilder{};
-    let report = AttestationReport::build(&quote_builder, &l1, &kp).await.unwrap();
-    let registry = ProverRegistry::new(l1, opt.registry_addr);
-    let registration = registry.register(report).await.unwrap();
-    dbg!(registration);
+    if cfg!(feature = "tstd_enclave") {
+        let l1 = Eth::dial(&opt.l1_endpoint, Some(&opt.private_key)).unwrap();
+        let kp = Keypair::new();
+        let quote_builder = SGXQuoteBuilder{};
+        let report = AttestationReport::build(&quote_builder, &l1, &kp).await.unwrap();
+        let registry = ProverRegistry::new(l1, opt.registry_addr);
+        let registration = registry.register(report).await.unwrap();
+        dbg!(registration);
+    }
 
     for tx in &opt.txs {
         let file_stem = tx.file_stem().unwrap().to_str().unwrap();
@@ -111,7 +113,7 @@ async fn run_verifier() {
                 |block, (start, client, dir, total)| async move {
                     let idx = block - start;
                     let output = dir.join(format!("{}.blocktrace", block));
-                    let is_exist = std::fs::try_exists(&output).unwrap();
+                    let is_exist = Path::new(&output).exists();
                     if is_exist {
                         return Ok::<(), ()>(());
                     }
