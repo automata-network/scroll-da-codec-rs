@@ -43,9 +43,7 @@ interface IProverRegistry {
     error PROVER_OUT_OF_DATE(uint256);
 
     event InstanceAdded(
-        uint256 indexed id,
-        address indexed instance,
-        address replaced,
+        address indexed id,
         uint256 validUntil
     );
 

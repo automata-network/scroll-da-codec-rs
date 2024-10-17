@@ -49,6 +49,7 @@ contract ProverRegistry is IProverRegistry {
             validUnitl,
             _data.teeType
         );
+        emit InstanceAdded(_data.addr, validUnitl);
     }
 
     /// TODO: each proof should coming from different teeType
