@@ -1,4 +1,4 @@
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 use base::eth::{primitives::B256, EthError};
 use base::prover::{Pob, Poe};
@@ -15,9 +15,9 @@ pub struct ScrollBatchVerifier {
 }
 
 impl ScrollBatchVerifier {
-    pub fn new(el: Option<&str>) -> Result<Self, ValidateError> {
+    pub fn new(el: Option<&str>, call_timeout: Option<Duration>) -> Result<Self, ValidateError> {
         let el = match el {
-            Some(url) => Some(ScrollExecutionNode::dial(url)?),
+            Some(url) => Some(ScrollExecutionNode::dial(url, call_timeout)?),
             None => None,
         };
         let alive = Alive::new();

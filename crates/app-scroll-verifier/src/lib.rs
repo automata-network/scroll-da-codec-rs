@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
 
-use std::path::{Path, PathBuf};
+use std::{path::{Path, PathBuf}, time::Duration};
 
 use automata_sgx_sdk::types::SgxStatus;
 use base::{eth::Eth, thread::parallel, trace::Alive};
@@ -23,6 +23,8 @@ struct Opt {
     private_key: String,
     #[clap(long)]
     registry_addr: Address,
+    #[clap(long, default_value = "60")]
+    timeout_secs: usize,
     txs: Vec<PathBuf>,
 }
 
@@ -93,7 +95,8 @@ async fn run_verifier() {
 
         if !opt.download_from.is_empty() {
             log::info!("downloading from {}...", opt.download_from);
-            let client = ScrollExecutionNode::dial(&opt.download_from).unwrap();
+            let timeout = Some(Duration::from_secs(opt.timeout_secs as _));
+            let client = ScrollExecutionNode::dial(&opt.download_from, timeout).unwrap();
 
             let block_numbers = batch
                 .chunks
