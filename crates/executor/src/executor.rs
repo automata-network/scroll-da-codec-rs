@@ -168,6 +168,7 @@ where
                     }
                 }
 
+                storage_tire.prepare_root();
                 acc_data.storage_root = H256::from(storage_tire.root());
             }
 
@@ -186,6 +187,7 @@ where
                 .update_account(addr.as_slice(), &acc_data.into())
                 .map_err(ExecutionError::UpdateAccount(&ctx.number(), addr))?;
         }
+        zktrie.prepare_root();
         Ok(())
     }
 }

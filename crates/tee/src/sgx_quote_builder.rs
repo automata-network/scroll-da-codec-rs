@@ -1,8 +1,8 @@
-use crate::ReportData;
 use alloy::primitives::{keccak256, Bytes, U256};
 
 use alloy::sol_types::SolValue;
 
+use crate::abi::ProverRegistryStub::ReportData;
 use crate::ReportBuilder;
 
 pub struct SGXQuoteBuilder {}

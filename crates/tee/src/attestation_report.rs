@@ -1,6 +1,6 @@
 use alloy::primitives::{Address, Bytes, B256, U256};
 
-use crate::{Keypair, RegisterCall, ReportData};
+use crate::{abi::ProverRegistryStub::ReportData, Keypair, RegisterCall};
 use base::eth::{Eth, EthError};
 
 #[derive(Clone, Debug)]

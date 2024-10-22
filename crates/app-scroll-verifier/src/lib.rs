@@ -47,6 +47,8 @@ fn read_batch_task(path: &PathBuf) -> BatchTask {
         "should use commit tx"
     );
     let commit_tx_calldata = std::fs::read(&path).unwrap();
+    let commit_tx_calldata = String::from_utf8_lossy(&commit_tx_calldata);
+    let commit_tx_calldata = commit_tx_calldata.trim();
     let commit_tx_calldata = hex::decode(&commit_tx_calldata[2..]).unwrap();
     let batch = BatchTask::from_calldata(&commit_tx_calldata[4..]).unwrap();
     batch
@@ -56,7 +58,7 @@ fn read_finalize(path: &PathBuf) -> Finalize {
     let file_name = path.file_name().unwrap().to_str().unwrap();
     let file_name = file_name.replace("commit", "finalize");
     let path = path.parent().unwrap().join(file_name);
-    let calldata = std::fs::read(&path).unwrap();
+    let calldata = std::fs::read(&path).map_err(|err| format!("read {:?}: {:?}", path, err)).unwrap();
     let calldata = hex::decode(&calldata[2..]).unwrap();
     Finalize::from_calldata(&calldata[4..]).unwrap()
 }
@@ -83,7 +85,7 @@ async fn run_verifier() {
         log::info!("executing {}...", tx.display());
 
         let batch = read_batch_task(tx);
-        // let finalize = read_finalize(tx);
+        let finalize = read_finalize(tx);
 
         let dir = tx.parent().unwrap().join("downloaded").join(file_stem);
 
@@ -164,6 +166,7 @@ async fn run_verifier() {
         log::info!("executing blocks...");
         let poe = ScrollBatchVerifier::verify(&batch, chunks).await.unwrap();
 
+        finalize.assert_poe(&poe);
         dbg!(poe);
         
         log::info!("done");
