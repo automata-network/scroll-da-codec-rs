@@ -26,7 +26,7 @@ mpt-zktrie = { git = "https://github.com/scroll-tech/zkevm-circuits", branch = "
 scroll-zstd = { git = "https://github.com/scroll-tech/da-codec" }
 scroll-zstd-encoder = { git = "https://github.com/scroll-tech/da-codec", package = "encoder" }
 
-alloy = { version = "0.2", default-features = false, features = ["std", "rlp", "serde", "json"] }
+alloy = { version = "0.2", default-features = false, features = ["std", "rlp", "serde", "json", "contract"] }
 alloy-rlp = { version = "0.3", features = ["derive"] }
 
 serde = { version = "=1.0.197", features = ["derive"] }
